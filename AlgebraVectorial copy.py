@@ -1,59 +1,75 @@
 import math
 
-class AlgebraVectorial:
-    def __init__(self, a, b, c=0):
-        self.a = a
-        self.b = b
-        self.c = c
+class Vector:
+    def __init__(self, x=0, y=0, z=0):
+        self.x = x
+        self.y = y
+        self.z = z
     
-    def __add__(self, other):
-        return AlgebraVectorial(self.a + other.a, self.b + other.b, self.c + other.c)
+    def sumar(self, a):
+        return Vector(self.x + a.x, self.y + a.y, self.z + a.z)
     
-    def __sub__(self, other):
-        return AlgebraVectorial(self.a - other.a, self.b - other.b, self.c - other.c)
+    def restar(self, b):
+        return Vector(self.x - b.x, self.y - b.y, self.z - b.z)
     
-    def __mul__(self, scalar):
-        return AlgebraVectorial(self.a * scalar, self.b * scalar, self.c * scalar)
-    
-    def productoEscalar(self, other):
-        return self.a * other.a + self.b * other.b + self.c * other.c
-    
-    def productoVectorial(self, other):
-        return AlgebraVectorial(
-            self.b * other.c - self.c * other.b,
-            self.c * other.a - self.a * other.c,
-            self.a * other.b - self.b * other.a
+    def producto_vectorial(self, c):
+        return Vector(
+            self.y * c.z - self.z * c.y,
+            self.z * c.x - self.x * c.z,
+            self.x * c.y - self.y * c.x
         )
     
-    def magnitudVectorial(self):
-        return math.sqrt(self.a**2 + self.b**2 + self.c**2)
+    def magnitud(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
     
-    def es_perpendicular(self, other):
-        return self.productoEscalar(other) == 0
+    def mostrar(self):
+        return f"<{self.x}, {self.y}, {self.z}>"
+
+class AlgebraVectorial:
+    @staticmethod
+    def es_perpendicular(a, b):
+        return a.sumar(b).magnitud() == a.restar(b).magnitud()
     
-    def es_paralelo(self, other):
-        return self.productoVectorial(other).magnitudVectorial() == 0
+    @staticmethod
+    def es_perpendicular_producto_punto(a, b):
+        return a.x * b.x + a.y * b.y + a.z * b.z == 0
     
-    def proyeccion(self, other):
-        factor = self.productoEscalar(other) / (other.magnitudVectorial() ** 2)
-        return other * factor
+    @staticmethod
+    def es_perpendicular_criterio(a, b):
+        suma_cuadrados = a.magnitud() ** 2 + b.magnitud() ** 2
+        magnitud_suma_cuadrada = a.sumar(b).magnitud() ** 2
+        return magnitud_suma_cuadrada == suma_cuadrados
     
-    def componente(self, other):
-        return self.productoEscalar(other) / other.magnitudVectorial()
+    @staticmethod
+    def es_paralelo(a, b):
+        return a.producto_vectorial(b).magnitud() == 0
     
-    def __str__(self):
-        return f"({self.a}, {self.b}, {self.c})"
+    @staticmethod
+    def es_paralelo_factor(a, b, r):
+        return (a.x / b.x == r) and (a.y / b.y == r) and (a.z / b.z == r)
+    
+    @staticmethod
+    def proyeccion(a, b):
+        producto_punto = a.x * b.x + a.y * b.y + a.z * b.z
+        magnitud_cuadrada = b.magnitud() ** 2
+        factor = producto_punto / magnitud_cuadrada
+        return Vector(b.x * factor, b.y * factor, b.z * factor)
+    
+    @staticmethod
+    def componente(a, b):
+        producto_punto = a.x * b.x + a.y * b.y + a.z * b.z
+        return producto_punto / b.magnitud()
 
-# Ejemplo de uso
-v1 = AlgebraVectorial(3, 4, 0)
-v2 = AlgebraVectorial(6, 8, 0)
-
-print("¿Son perpendiculares?", v1.es_perpendicular(v2))
-print("¿Son paralelos?", v1.es_paralelo(v2))
-print("Proyección de v1 sobre v2:", v1.proyeccion(v2))
-print("Componente de v1 en la dirección de v2:", v1.componente(v2))
-
-
-
+if __name__ == "__main__":
+    a = Vector(2, 4, 6)
+    b = Vector(0, 0, 0)
+    c = Vector(10, -3, -1)
+    d = AlgebraVectorial.proyeccion(a, c)
+    
+    print(f"¿Los vectores {a.mostrar()} y {b.mostrar()} son perpendiculares?: {AlgebraVectorial.es_perpendicular(a, b)}")
+    print(f"¿Los vectores {a.mostrar()} y {c.mostrar()} son perpendiculares?: {AlgebraVectorial.es_perpendicular_producto_punto(a, c)}")
+    print(f"¿Los vectores {c.mostrar()} y {a.mostrar()} son paralelos?: {AlgebraVectorial.es_paralelo(c, a)}")
+    print(f"La proyección de a sobre c = {d.mostrar()}")
+    print(f"El componente de a en c = {AlgebraVectorial.componente(a, c)}")
 
 
