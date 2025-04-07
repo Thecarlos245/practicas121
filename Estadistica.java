@@ -9,6 +9,7 @@ public class Estadistica {
             suma += num;
         }
         return suma / numeros.length;
+        jhjkhkjhjkhk
     }
 
     // Método para calcular la desviación estándar
